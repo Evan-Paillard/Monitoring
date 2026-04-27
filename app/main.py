@@ -38,7 +38,31 @@ def metrics():
 
 @app.route("/")
 def index():
-    return jsonify(message="monitoring service"), 200
+    return """
+<!DOCTYPE html>
+<html>
+<head><title>Monitoring App</title></head>
+<body>
+  <h1>Monitoring App</h1>
+  <button onclick="generateLoad()">Generate Load</button>
+  <p id="status"></p>
+  <script>
+    async function generateLoad() {
+      document.getElementById('status').textContent = 'Sending requests...';
+      const promises = Array.from({length: 100}, () => fetch('/work'));
+      await Promise.all(promises);
+      document.getElementById('status').textContent = 'Done! Watch the pods scale.';
+    }
+  </script>
+</body>
+</html>
+"""
+
+
+@app.route("/work")
+def work():
+    result = sum(i * i for i in range(50000))
+    return jsonify(result=result), 200
 
 
 if __name__ == "__main__":
